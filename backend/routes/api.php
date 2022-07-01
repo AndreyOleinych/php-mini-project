@@ -22,6 +22,8 @@ Route::prefix('v1')->group(function () {
     Route::group(['prefix' => 'auth'], function () {
         Route::post('/register', [AuthController::class, 'register']);
         Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+        Route::post('/reset', [AuthController::class, 'resetPassword']);
         Route::get('/me', [AuthController::class, 'me']);
         Route::put('/me', [AuthController::class, 'update']);
         Route::post('/me/image', [AuthController::class, 'uploadProfileImage']);

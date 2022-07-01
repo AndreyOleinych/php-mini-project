@@ -6,14 +6,9 @@
                     <div class="column is-three-quarters-mobile is-two-thirds-tablet is-one-third-desktop">
                         <div class="box shadow-box">
                             <p class="subtitle">
-                                Don't have an account?
-                                <router-link class="link" to="/auth/sign-up">
-                                    Sign up
-                                </router-link>
-                            </p>
-                            <p class="subtitle">
-                                <router-link class="link" to="/auth/forgot-password">
-                                    Forgot password?
+                                I have an account?
+                                <router-link class="link" to="/auth/sign-in">
+                                    Sign in
                                 </router-link>
                             </p>
 
@@ -34,7 +29,13 @@
                                     <b-input
                                         type="password"
                                         v-model="user.password"
-                                        @keyup.native.enter="onLogin"
+                                    />
+                                </b-field>
+
+                                <b-field label="Password">
+                                    <b-input
+                                        type="password"
+                                        v-model="user.password_confirmation"
                                     />
                                 </b-field>
 
@@ -42,9 +43,9 @@
                                     <button
                                         type="button"
                                         class="button is-primary is-rounded"
-                                        @click="onLogin"
+                                        @click="onResetPassword"
                                     >
-                                        Sign in
+                                        Reset Password
                                     </button>
                                 </div>
                             </form>
@@ -61,28 +62,28 @@ import { mapActions } from 'vuex';
 import showStatusToast from '../components/mixin/showStatusToast';
 
 export default {
-    name: 'SignInPage',
+    name: 'ResetPasswordPage',
 
     mixins: [showStatusToast],
 
     data: () => ({
         user: {
-            email: '',
             password: '',
+            password_confirmation: ''
         },
     }),
 
     methods: {
         ...mapActions('auth', [
-            'signIn',
+            'resetPassword',
         ]),
 
-        onLogin() {
-            this.signIn(this.user)
+        onResetPassword() {
+            this.resetPassword(this.user)
                 .then(() => {
                     this.showSuccessMessage('Welcome!');
 
-                    this.$router.push({ path: '/' }).catch(() => {});
+                    this.$router.push({ path: '/auth/sign-in' }).catch(() => {});
                 })
                 .catch(error => this.showErrorMessage(error.message));
         },

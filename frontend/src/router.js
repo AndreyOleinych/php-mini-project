@@ -10,6 +10,8 @@ const Tweet = () => import(/* webpackChunkName: "tweet" */ './views/Tweet.vue');
 
 // auth pages using same chunk name
 const SignIn = () => import(/* webpackChunkName: "auth" */ './views/SignIn.vue');
+const ForgotPassword = () => import(/* webpackChunkName: "auth" */ './views/ForgotPassword.vue');
+const ResetPassword = () => import(/* webpackChunkName: "auth" */ './views/ResetPassword.vue');
 const SignUp = () => import(/* webpackChunkName: "auth" */ './views/SignUp.vue');
 
 Vue.use(Router);
@@ -51,6 +53,18 @@ const router = new Router({
             path: '/auth/sign-in',
             name: 'auth.signIn',
             component: SignIn,
+            meta: { handleAuth: true },
+        },
+        {
+            path: '/auth/forgot-password',
+            name: 'auth.forgotPassword',
+            component: ForgotPassword,
+            meta: { handleAuth: true },
+        },
+        {
+            path: '/auth/reset/:token',
+            name: 'auth.resetPassword',
+            component: ResetPassword,
             meta: { handleAuth: true },
         },
         {

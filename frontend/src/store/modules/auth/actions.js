@@ -26,6 +26,55 @@ export default {
         }
     },
 
+    async forgotPassword({ commit }, { email }) {
+        commit(SET_LOADING, true, { root: true });
+
+        try {
+            const data = await api.post('/auth/forgot-password', {
+                email
+            });
+
+            commit(USER_LOGIN, {
+                accessToken: data.access_token,
+                tokenType: data.token_type
+            });
+            commit(SET_LOADING, false, { root: true });
+
+            return Promise.resolve();
+        } catch (errorMsg) {
+            commit(SET_LOADING, false, { root: true });
+
+            return Promise.reject(errorMsg);
+        }
+    },
+
+    async resetPassword({ commit }, {
+        password, passwordConfirmation
+    }) {
+        commit(SET_LOADING, true, { root: true });
+
+        try {
+            const data = await api.post('/auth/reset', {
+                email: this.$route.params.email,
+                password,
+                password_confirmation: passwordConfirmation,
+                token: this.$route.params.token
+            });
+
+            commit(USER_LOGIN, {
+                accessToken: data.access_token,
+                tokenType: data.token_type
+            });
+            commit(SET_LOADING, false, { root: true });
+
+            return Promise.resolve();
+        } catch (errorMsg) {
+            commit(SET_LOADING, false, { root: true });
+
+            return Promise.reject(errorMsg);
+        }
+    },
+
     async signUp({ commit }, {
         firstName,
         lastName,
