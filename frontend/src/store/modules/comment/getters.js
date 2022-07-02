@@ -13,6 +13,8 @@ export default {
         .getCommentsSortedByCreatedDateAsc
         .filter(comment => comment.tweetId === tweetId),
 
+    isCommentOwner: () => (commentId, userId) => commentId === userId,
+
     tweetIsCommentedByUser: (state, getters) => (tweetId, userId) => getters
         .getCommentsByTweetId(tweetId)
         .find(comment => comment.authorId === userId),

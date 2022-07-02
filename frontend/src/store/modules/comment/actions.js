@@ -1,7 +1,7 @@
 import api from '@/api/Api';
 import { commentMapper } from '@/services/Normalizer';
 import { SET_LOADING } from '../../mutationTypes';
-import { SET_COMMENTS, ADD_COMMENT } from './mutationTypes';
+import { SET_COMMENTS, ADD_COMMENT, DELETE_COMMENT } from './mutationTypes';
 import { INCREMENT_COMMENTS_COUNT } from '../tweet/mutationTypes';
 
 export default {
@@ -35,6 +35,23 @@ export default {
             commit(SET_LOADING, false, { root: true });
 
             return Promise.resolve(commentMapper(comment));
+        } catch (error) {
+            commit(SET_LOADING, false, { root: true });
+
+            return Promise.reject(error);
+        }
+    },
+
+    async deleteComment({ commit }, id) {
+        commit(SET_LOADING, true, { root: true });
+
+        try {
+            await api.delete(`/comments/${id}`);
+
+            commit(DELETE_COMMENT, id);
+            commit(SET_LOADING, false, { root: true });
+
+            return Promise.resolve();
         } catch (error) {
             commit(SET_LOADING, false, { root: true });
 

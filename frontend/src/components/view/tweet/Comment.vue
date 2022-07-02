@@ -15,24 +15,32 @@
         </figure>
         <div class="media-content">
             <div class="content">
+                <strong>
+                    {{ comment.id }}
+                    {{ comment.author.firstName }} {{ comment.author.lastName }}
+                </strong>
+                <br>
                 <p>
-                    <strong>
-                        {{ comment.author.firstName }} {{ comment.author.lastName }}
-                    </strong>
-                    <br>
                     {{ comment.body }}
-                    <br>
-                    <small class="has-text-grey">
-                        {{ comment.created | createdDate }}
-                    </small>
                 </p>
+                <br>
+                <small class="has-text-grey">
+                    {{ comment.created | createdDate }}
+                </small>
+                <div v-if="isCommentOwner(comment.author.id, user.id)" class="d-inline">
+                    <!--                            <div class="buttons">-->
+                    <b-button type="is-danger" @click="onDeleteComment">Delete</b-button>
+                    <!--                            </div>-->
+                </div>
             </div>
         </div>
     </article>
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex';
 import DefaultAvatar from '../../common/DefaultAvatar.vue';
+import showStatusToast from '../../mixin/showStatusToast';
 
 export default {
     name: 'Comment',
@@ -41,12 +49,51 @@ export default {
         DefaultAvatar,
     },
 
+    mixins: [showStatusToast],
+
     props: {
         comment: {
             type: Object,
             required: true,
         },
     },
+
+    computed: {
+        ...mapGetters('auth', {
+            user: 'getAuthenticatedUser'
+        }),
+
+        ...mapGetters('comment', [
+            'isCommentOwner',
+        ]),
+    },
+
+    methods: {
+        ...mapActions('comment', [
+            'deleteComment',
+        ]),
+
+        onDeleteComment() {
+            this.$buefy.dialog.confirm({
+                title: 'Deleting comment',
+                message: 'Are you sure you want to <b>delete</b> your comment? This action cannot be undone.',
+                confirmText: 'Delete comment',
+                type: 'is-danger',
+
+                onConfirm: async () => {
+                    try {
+                        await this.deleteComment(this.comment.id);
+
+                        this.showSuccessMessage('Comment deleted!');
+
+                        this.$router.go(this.$router.currentRoute).catch(() => {});
+                    } catch {
+                        this.showErrorMessage('Unable to delete comment!');
+                    }
+                }
+            });
+        },
+    }
 };
 </script>
 

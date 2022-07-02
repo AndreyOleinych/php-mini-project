@@ -6,6 +6,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Action\Comment\AddCommentAction;
 use App\Action\Comment\AddCommentRequest;
+use App\Action\Comment\DeleteCommentAction;
+use App\Action\Comment\DeleteCommentRequest;
 use App\Action\Comment\GetCommentByIdAction;
 use App\Action\Comment\GetCommentCollectionAction;
 use App\Action\Comment\GetCommentCollectionByTweetIdAction;
@@ -81,5 +83,18 @@ final class CommentController extends ApiController
         );
 
         return $this->createPaginatedResponse($response->getPaginator(), $presenter);
+    }
+
+    public function deleteCommentById(
+        DeleteCommentAction $action,
+        string $id
+    ): ApiResponse {
+        $action->execute(
+            new DeleteCommentRequest(
+                (int)$id
+            )
+        );
+
+        return $this->createDeletedResponse();
     }
 }
