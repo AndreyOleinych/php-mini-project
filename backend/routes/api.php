@@ -52,6 +52,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/', [CommentController::class, 'getCommentCollection']);
             Route::get('/{id}', [CommentController::class, 'getCommentById']);
             Route::post('/', [CommentController::class, 'newComment']);
+            Route::delete('/{id}', [CommentController::class, 'deleteCommentById']);
         });
     });
 });
