@@ -7,6 +7,12 @@ export default {
         )
     ),
 
+    tweetsSortedByLikesCount: state => Object.values(state.tweets).sort(
+        (a, b) => (
+            b.likesCount - a.likesCount
+        )
+    ),
+
     getTweetById: state => id => state.tweets[id],
 
     isTweetOwner: (state, getters) => (tweetId, userId) => getters.getTweetById(tweetId).author.id === userId,

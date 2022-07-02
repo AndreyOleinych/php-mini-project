@@ -12,6 +12,18 @@
             >
                 Tweet :)
             </b-button>
+
+            <div class="sort-container">
+                <strong>Sort By:</strong>
+                <div v-if="currentSorting == 'likes'">
+                    <a class="sort-item" @click="currentSorting = 'dates'">Dates</a>
+                    <a class="sort-item active" @click="currentSorting = 'likes'">Likes</a>
+                </div>
+                <div v-else>
+                    <a class="sort-item active" @click="currentSorting = 'dates'">Dates</a>
+                    <a class="sort-item" @click="currentSorting = 'likes'">Likes</a>
+                </div>
+            </div>
         </div>
 
         <TweetPreviewList :tweets="tweets" @infinite="infiniteHandler" />
@@ -41,6 +53,7 @@ export default {
     },
 
     data: () => ({
+        currentSorting: 'tweetsSortedByCreatedDate',
         isNewTweetModalActive: false,
         page: 1,
     }),
@@ -66,9 +79,21 @@ export default {
     },
 
     computed: {
-        ...mapGetters('tweet', {
-            tweets: 'tweetsSortedByCreatedDate'
-        }),
+        ...mapGetters('tweet', [
+            'tweetsSortedByCreatedDate',
+            'tweetsSortedByLikesCount'
+        ]),
+
+        tweets() {
+            switch (this.currentSorting) {
+            case 'dates':
+                return this.tweetsSortedByCreatedDate;
+            case 'likes':
+                return this.tweetsSortedByLikesCount;
+            default:
+                return this.tweetsSortedByCreatedDate;
+            }
+        },
     },
 
     methods: {
@@ -126,5 +151,22 @@ export default {
     @media screen and (max-width: $tablet) {
         font-size: 1rem;
     }
+}
+
+.sort-container{
+    display: flex;
+    justify-content: end;
+}
+.sort-container div{
+    display: flex;
+}
+.sort-item{
+    display: block;
+    margin-left: 10px;
+}
+
+.sort-item.active{
+    font-weight: bold;
+    color: #ff3860;
 }
 </style>
