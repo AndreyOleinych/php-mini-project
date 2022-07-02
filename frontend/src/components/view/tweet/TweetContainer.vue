@@ -65,6 +65,9 @@
                                             >
                                                 <font-awesome-icon icon="heart" />
                                             </span>
+                                        </a>
+
+                                        <a class="level-item" @click="showUsersLikedTweetModal">
                                             {{ tweet.likesCount }}
                                         </a>
                                     </b-tooltip>
@@ -94,8 +97,14 @@
 
         <b-modal :active.sync="isImageModalActive">
             <p class="image is-4by3">
-                <img class="fit" :src="tweet.imageUrl">
+                <img class="fit" :src="tweet.imageUrl" alt="">
             </p>
+        </b-modal>
+
+        <b-modal :active.sync="areUsersLikedTweetModalActive">
+            <template>
+                <UserListContainer :users-ids="tweetAreLikedByUsers(tweet.id)" />
+            </template>
         </b-modal>
 
         <b-modal :active.sync="isEditTweetModalActive" has-modal-card>
@@ -111,11 +120,13 @@ import NewCommentForm from './NewCommentForm.vue';
 import EditTweetForm from './EditTweetForm.vue';
 import DefaultAvatar from '../../common/DefaultAvatar.vue';
 import showStatusToast from '../../mixin/showStatusToast';
+import UserListContainer from '../user/UserListContainer.vue';
 
 export default {
     name: 'TweetContainer',
 
     components: {
+        UserListContainer,
         Comment,
         NewCommentForm,
         EditTweetForm,
@@ -126,7 +137,8 @@ export default {
 
     data: () => ({
         isEditTweetModalActive: false,
-        isImageModalActive: false
+        isImageModalActive: false,
+        areUsersLikedTweetModalActive: false
     }),
 
     async created() {
@@ -142,7 +154,8 @@ export default {
         ...mapGetters('tweet', [
             'getTweetById',
             'isTweetOwner',
-            'tweetIsLikedByUser'
+            'tweetIsLikedByUser',
+            'tweetAreLikedByUsers'
         ]),
 
         ...mapGetters('comment', [
@@ -193,6 +206,10 @@ export default {
 
         showImageModal() {
             this.isImageModalActive = true;
+        },
+
+        showUsersLikedTweetModal() {
+            this.areUsersLikedTweetModalActive = true;
         },
 
         async onLikeOrDislikeTweet() {
