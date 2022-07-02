@@ -1,6 +1,26 @@
 <template>
     <div class="tweets-container">
-        <transition-group name="slide-prev" tag="div">
+        <div class="views-container">
+            <strong>View:</strong>
+            <div v-if="currentDisplay == 'cards'">
+                <a class="display-item active" @click="currentDisplay = 'cards'">Cards</a>
+                <a class="display-item " @click="currentDisplay = 'media'">Media</a>
+            </div>
+            <div v-else>
+                <a class="display-item " @click="currentDisplay = 'cards'">Cards</a>
+                <a class="display-item active" @click="currentDisplay = 'media'">Media</a>
+            </div>
+        </div>
+        <transition-group v-if="currentDisplay == 'cards'" name="slide-prev" tag="div">
+            <template v-for="tweet in tweets">
+                <TweetCard
+                    :key="tweet.id"
+                    :tweet="tweet"
+                    @click="onTweetClick"
+                />
+            </template>
+        </transition-group>
+        <transition-group v-else name="slide-prev" tag="div">
             <template v-for="tweet in tweets">
                 <TweetPreview
                     :key="tweet.id"
@@ -20,6 +40,7 @@
 <script>
 import InfiniteLoading from 'vue-infinite-loading';
 import TweetPreview from './TweetPreview.vue';
+import TweetCard from './TweetCard.vue';
 
 export default {
     name: 'TweetPreviewList',
@@ -31,9 +52,14 @@ export default {
         },
     },
 
+    data: () => ({
+        currentDisplay: 'media',
+    }),
+
     components: {
         TweetPreview,
         InfiniteLoading,
+        TweetCard,
     },
 
     methods: {
@@ -51,5 +77,26 @@ export default {
 <style scoped lang="scss">
 .tweets-container {
     padding-bottom: 20px;
+}
+.views-container{
+    display: flex;
+    justify-content: end;
+    width: 100%;
+}
+.views-container div{
+    display: flex;
+}
+.display-item div{
+    display: flex;
+}
+.display-item{
+    display: block;
+    color: #000;
+    margin-left: 10px;
+}
+
+.display-item.active{
+    font-weight: bold;
+    color: #ff3860;
 }
 </style>
