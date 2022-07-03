@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use InvalidArgumentException;
 
 /**
@@ -33,7 +34,10 @@ final class Comment extends Model
     ];
 
     // append author relation in entity by default
-    protected $with = ['author'];
+    protected $with = ['author', 'likes'];
+
+    // Eager load related entities count each time.
+    protected $withCount = ['likes'];
 
     public function author(): BelongsTo
     {
@@ -82,5 +86,15 @@ final class Comment extends Model
     public function getTweetId(): int
     {
         return $this->tweet_id;
+    }
+
+    public function likes(): MorphMany
+    {
+        return $this->morphMany(Like::class, 'likeable');
+    }
+
+    public function getLikesCount(): int
+    {
+        return (int)$this->likes_count;
     }
 }

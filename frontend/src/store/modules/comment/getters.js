@@ -9,6 +9,8 @@ export default {
             )
         ),
 
+    getCommentById: state => id => state.comments[id],
+
     getCommentsByTweetId: (state, getters) => tweetId => getters
         .getCommentsSortedByCreatedDateAsc
         .filter(comment => comment.tweetId === tweetId),
@@ -18,4 +20,13 @@ export default {
     tweetIsCommentedByUser: (state, getters) => (tweetId, userId) => getters
         .getCommentsByTweetId(tweetId)
         .find(comment => comment.authorId === userId),
+
+    commentIsLikedByUser: (state, getters) => (commentId, userId) => getters
+        .getCommentById(commentId)
+        .likes
+        .find(like => like.userId === userId) !== undefined,
+
+    commentAreLikedByUsers: (state, getters) => (commentId) => getters
+        .getCommentById(commentId)
+        .likes,
 };

@@ -1,7 +1,9 @@
 import api from '@/api/Api';
 import { commentMapper } from '@/services/Normalizer';
 import { SET_LOADING } from '../../mutationTypes';
-import { SET_COMMENTS, ADD_COMMENT, DELETE_COMMENT } from './mutationTypes';
+import {
+    SET_COMMENTS, ADD_COMMENT, DELETE_COMMENT, LIKE_COMMENT, DISLIKE_COMMENT
+} from './mutationTypes';
 import { INCREMENT_COMMENTS_COUNT } from '../tweet/mutationTypes';
 
 export default {
@@ -49,6 +51,34 @@ export default {
             await api.delete(`/comments/${id}`);
 
             commit(DELETE_COMMENT, id);
+            commit(SET_LOADING, false, { root: true });
+
+            return Promise.resolve();
+        } catch (error) {
+            commit(SET_LOADING, false, { root: true });
+
+            return Promise.reject(error);
+        }
+    },
+
+    async likeOrDislikeComment({ commit }, { id, userId }) {
+        commit(SET_LOADING, true, { root: true });
+
+        try {
+            const data = await api.put(`/comments/${id}/like`);
+
+            if (data.status === 'added') {
+                commit(LIKE_COMMENT, {
+                    id,
+                    userId
+                });
+            } else {
+                commit(DISLIKE_COMMENT, {
+                    id,
+                    userId
+                });
+            }
+
             commit(SET_LOADING, false, { root: true });
 
             return Promise.resolve();

@@ -16,7 +16,6 @@
         <div class="media-content">
             <div class="content">
                 <strong>
-                    {{ comment.id }}
                     {{ comment.author.firstName }} {{ comment.author.lastName }}
                 </strong>
                 <br>
@@ -32,21 +31,45 @@
                     <b-button type="is-danger" @click="onDeleteComment">Delete</b-button>
                     <!--                            </div>-->
                 </div>
+                <b-tooltip label="Like" animated>
+                    <a class="level-item" @click="onLikeOrDislikeComment">
+                        <span
+                            class="icon is-medium has-text-info"
+                            :class="{
+                                'has-text-danger': commentIsLikedByUser(comment.id, user.id)
+                            }"
+                        >
+                            <font-awesome-icon icon="heart" />
+                        </span>
+                    </a>
+
+                    <a class="level-item" @click="showUsersLikedCommentModal">
+                        {{ comment.likesCount }}
+                    </a>
+                </b-tooltip>
             </div>
         </div>
     </article>
+
+<!--    <b-modal :active.sync="areUsersLikedCommentModalActive">-->
+<!--        <template>-->
+<!--            <UserListContainer :users-ids="commentAreLikedByUsers(comment.id)" />-->
+<!--        </template>-->
+<!--    </b-modal>-->
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import DefaultAvatar from '../../common/DefaultAvatar.vue';
 import showStatusToast from '../../mixin/showStatusToast';
+import UserListContainer from '../user/UserListContainer.vue';
 
 export default {
     name: 'Comment',
 
     components: {
         DefaultAvatar,
+        UserListContainer
     },
 
     mixins: [showStatusToast],
@@ -58,6 +81,10 @@ export default {
         },
     },
 
+    data: () => ({
+        areUsersLikedCommentModalActive: false,
+    }),
+
     computed: {
         ...mapGetters('auth', {
             user: 'getAuthenticatedUser'
@@ -65,12 +92,15 @@ export default {
 
         ...mapGetters('comment', [
             'isCommentOwner',
+            'commentIsLikedByUser',
+            'commentAreLikedByUsers'
         ]),
     },
 
     methods: {
         ...mapActions('comment', [
             'deleteComment',
+            'likeOrDislikeComment'
         ]),
 
         onDeleteComment() {
@@ -93,6 +123,17 @@ export default {
                 }
             });
         },
+
+        showUsersLikedCommentModal() {
+            this.areUsersLikedCommentModalActive = true;
+        },
+
+        async onLikeOrDislikeComment() {
+            await this.likeOrDislikeComment({
+                id: this.comment.id,
+                userId: this.user.id
+            });
+        }
     }
 };
 </script>
